@@ -1,6 +1,6 @@
 ### Formal Languages & Finite Automata
 
-### Author: Lupan Ovidiu FAF-223
+### Course Overview by [Your Name]
 
 ### Objectives:
 
@@ -38,6 +38,10 @@ class Grammar:
             for char in chosen_option:
                 generated_string += self.generate_string(char)
             return generated_string
+
+ 
+ Here we define the grammar for Variant 16, consisting of non-terminal symbols (VN), terminal symbols (VT), and production rules (P). 
+ We also define a Grammar class with a method to generate strings based on the grammar rules.
 
 ### Part 2: Grammar to Finite Automaton Conversion
 
@@ -80,6 +84,11 @@ class FiniteAutomaton:
             current_state = self.transitions[(current_state, char)]
         return current_state in self.accept_states
 
+Explanation:
+ We define a function to convert the grammar into a finite automaton (FA). 
+ The function constructs states, alphabet, transitions, start state, and accept states based on the grammar rules.
+ We also define a Finite Automaton class with a method to check if a given string is accepted by the FA.
+
 ### Part 3: Testing Strings with the Finite Automaton
 
 ### Test strings
@@ -91,6 +100,9 @@ for string in test_strings:
         print(f"String '{string}' is accepted by the FA")
     else:
         print(f"String '{string}' is not accepted by the FA")
+
+Here we test several strings using the finite automaton generated from the grammar.
+For each test string, we convert the grammar to a finite automaton and check if the automaton accepts the string.
 
 ### Conclusions and Results
 
