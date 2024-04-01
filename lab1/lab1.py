@@ -1,13 +1,13 @@
 import random
 
-VN = {"S", "D", "F"}
+# Define the grammar rules for Variant 16
+VN = {"S", "A", "B"}
 VT = {"a", "b", "c", "d"}
 P = {
-    "S": ["aS", "bS", "cD"],
-    "D": ["dD", "bF", "a"],
-    "F": ["bS", "a"]
+    "S": ["aS", "bS", "cA"],
+    "A": ["dA", "bB", "a"],
+    "B": ["bS", "a"]
 }
-
 
 # Define a class for the grammar
 class Grammar:
@@ -27,14 +27,13 @@ class Grammar:
                 generated_string += self.generate_string(char)
             return generated_string
 
+# Create an instance of the Grammar class for Variant 16
+grammar_variant_16 = Grammar(VN, VT, P)
 
-# Create an instance of the Grammar class for Variant 22
-grammar_variant_22 = Grammar(VN, VT, P)
-
-# Generate 5 valid strings
+# Print generated strings
 print("Generated strings:")
 for _ in range(5):
-    generated_string = grammar_variant_22.generate_string("S")
+    generated_string = grammar_variant_16.generate_string("S")
     print(generated_string)
 
 # Convert grammar to Finite Automaton
@@ -49,7 +48,7 @@ def grammar_to_finite_automaton(grammar):
     transitions = {}
     for state, rules in grammar.p.items():
         for rule in rules:
-            if len(rule) == 2:  # Production X -> aY   
+            if len(rule) == 2:  # Production X -> aY
                 transitions[(state, rule[0])] = rule[1]
             elif len(rule) == 1:
                 if rule[0] in grammar.vt:  # Simple terminal case
@@ -58,7 +57,6 @@ def grammar_to_finite_automaton(grammar):
                     transitions[(state, rule[0])] = next(iter(grammar.p[rule[0]]))[0]
 
     return FiniteAutomaton(states, alphabet, transitions, start_state, accept_states)
-
 
 # Define the Finite Automaton class
 class FiniteAutomaton:
@@ -77,12 +75,11 @@ class FiniteAutomaton:
             current_state = self.transitions[(current_state, char)]
         return current_state in self.accept_states
 
-
 # Test strings
 test_strings = ["aabbc", "ac", "abba", "acaaaabba", "aab"]
 print("\nTesting strings:")
 for string in test_strings:
-    fa = grammar_to_finite_automaton(grammar_variant_22)
+    fa = grammar_to_finite_automaton(grammar_variant_16)
     if fa.accepts(string):
         print(f"String '{string}' is accepted by the FA")
     else:
