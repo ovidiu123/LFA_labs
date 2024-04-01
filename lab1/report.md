@@ -1,6 +1,6 @@
-# Formal Languages & Finite Automata
+### Formal Languages & Finite Automata
 
-## Author: Lupan Ovidiu FAF-223
+### Author: Lupan Ovidiu FAF-223
 
 ### Objectives:
 
@@ -8,12 +8,11 @@
 2. Establish the initial setup for the semester project, including GitHub repository setup and language selection.
 3. Implement variant-specific tasks such as grammar definition, string generation, grammar to finite automaton conversion, and finite automaton testing.
 
-## Implementation Description
+### Implementation Description
 
 ### Part 1: Grammar Definition and Grammar Class
 
-```python
-# Grammar Definition for Variant 16
+### Grammar Definition for Variant 16
 VN = {"S", "A", "B"}
 VT = {"a", "b", "c", "d"}
 P = {
@@ -22,7 +21,7 @@ P = {
     "B": ["bS", "a"]
 }
 
-# Grammar Class
+### Grammar Class
 class Grammar:
     def __init__(self, vn, vt, p):
         self.vn = vn
@@ -39,10 +38,10 @@ class Grammar:
             for char in chosen_option:
                 generated_string += self.generate_string(char)
             return generated_string
-Part 2: Grammar to Finite Automaton Conversion
-python
-Copy code
-# Function to convert grammar to finite automaton
+
+### Part 2: Grammar to Finite Automaton Conversion
+
+### Function to convert grammar to finite automaton
 def grammar_to_finite_automaton(grammar):
     states = grammar.vn
     alphabet = grammar.vt
@@ -64,7 +63,7 @@ def grammar_to_finite_automaton(grammar):
 
     return FiniteAutomaton(states, alphabet, transitions, start_state, accept_states)
 
-# Define the Finite Automaton class
+### Define the Finite Automaton class
 class FiniteAutomaton:
     def __init__(self, states, alphabet, transitions, start_state, accept_states):
         self.states = states
@@ -82,9 +81,8 @@ class FiniteAutomaton:
         return current_state in self.accept_states
 
 ### Part 3: Testing Strings with the Finite Automaton
-python
-Copy code
-# Test strings
+
+### Test strings
 test_strings = ["aabbc", "ac", "abba", "acaaaabba", "aab"]
 print("\nTesting strings:")
 for string in test_strings:
@@ -94,20 +92,6 @@ for string in test_strings:
     else:
         print(f"String '{string}' is not accepted by the FA")
 
+### Conclusions and Results
 
-**Conclusions and results**
-
-This project was a great introduction to the world of formal languages! Here's what we achieved:
-
-* **Grammar Rules:** We clearly defined the "recipe" for creating valid sentences in our language. This involved symbols and production rules.
-* **Building a Language Generator:** We wrote code that uses our grammar recipe to make random, correct sentences. 
-* **The Machine Translator:** We created a program that turns our grammar into a special machine (a finite automaton).  This machine is like a language checker.
-* **Testing Time:** We fed some test sentences to our machine to see if it recognized them as part of our language.
-
-**What's Next?**
-
-* **Bigger Challenges:** We could try this with more complex languages.
-* **Faster Machine:**  Can we make our language-checking machine work even faster?
-* **Cool Projects:** The things we learned here could help us build parts of compilers (for programming languages) or tools to understand everyday language better.
-
-Overall, this project gave me a strong foundation in how to define languages and build tools to check them.  This is a cool starting point for exploring other language-related projects! 
+This project provided an overview of formal languages and finite automata. By implementing grammar definition, conversion to finite automata, and testing strings, we gained insights into language structure and validation mechanisms. This foundational knowledge can be extended to tackle more complex language-related projects in the future.
