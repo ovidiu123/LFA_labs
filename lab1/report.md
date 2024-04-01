@@ -1,6 +1,6 @@
 ### Formal Languages & Finite Automata
 
-### Course Overview by [Your Name]
+### Course Overview by Lupan Ovidiu FAF-223
 
 ### Objectives:
 
