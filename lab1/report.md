@@ -84,7 +84,7 @@ class FiniteAutomaton:
             current_state = self.transitions[(current_state, char)]
         return current_state in self.accept_states
 
-Explanation:
+
  We define a function to convert the grammar into a finite automaton (FA). 
  The function constructs states, alphabet, transitions, start state, and accept states based on the grammar rules.
  We also define a Finite Automaton class with a method to check if a given string is accepted by the FA.
