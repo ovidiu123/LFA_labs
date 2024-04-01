@@ -1,53 +1,28 @@
-# Intro to formal languages. Regular grammars. Finite Automata.
+# Formal Languages & Finite Automata
 
-### Course: Formal Languages & Finite Automata
-### Author: Lupan Ovidiu FAF-223
+## Author: Lupan Ovidiu FAF-223
 
-----
+### Objectives:
 
-## Objectives:
+1. Understand the fundamentals of formal languages and their characteristics.
+2. Establish the initial setup for the semester project, including GitHub repository setup and language selection.
+3. Implement variant-specific tasks such as grammar definition, string generation, grammar to finite automaton conversion, and finite automaton testing.
 
-
-1. Discover what a language is and what it needs to have in order to be considered a formal one;
-
-2. Provide the initial setup for the evolving project that you will work on during this semester. You can deal with each laboratory work as a separate task or project to demonstrate your understanding of the given themes, but you also can deal with labs as stages of making your own big solution, your own project. Do the following:
-
-    a. Create GitHub repository to deal with storing and updating your project;
-
-    b. Choose a programming language. Pick one that will be easiest for dealing with your tasks, you need to learn how to solve the problem itself, not everything around the problem (like setting up the project, launching it correctly and etc.);
-
-    c. Store reports separately in a way to make verification of your work simpler (duh)
-
-3. According to your variant number, get the grammar definition and do the following:
-
-    a. Implement a type/class for your grammar;
-
-    b. Add one function that would generate 5 valid strings from the language expressed by your given grammar;
-
-    c. Implement some functionality that would convert and object of type Grammar to one of type Finite Automaton;
-
-    d. For the Finite Automaton, please add a method that checks if an input string can be obtained via the state transition from it;
-   
-
-
-## Implementation description
-
+## Implementation Description
 
 ### Part 1: Grammar Definition and Grammar Class
 
 ```python
-import random
-
-# Define the grammar rules for Variant 22
-VN = {"S", "D", "F"}
+# Grammar Definition for Variant 16
+VN = {"S", "A", "B"}
 VT = {"a", "b", "c", "d"}
 P = {
-    "S": ["aS", "bS", "cD"],
-    "D": ["dD", "bF", "a"],
-    "F": ["bS", "a"]
+    "S": ["aS", "bS", "cA"],
+    "A": ["dA", "bB", "a"],
+    "B": ["bS", "a"]
 }
 
-# Define a class for the grammar
+# Grammar Class
 class Grammar:
     def __init__(self, vn, vt, p):
         self.vn = vn
@@ -64,26 +39,14 @@ class Grammar:
             for char in chosen_option:
                 generated_string += self.generate_string(char)
             return generated_string
-
-# Create an instance of the Grammar class for Variant 22
-grammar_variant_22 = Grammar(VN, VT, P)
-
-# Generate 5 valid strings
-print("Generated strings:")
-for _ in range(5):
-    generated_string = grammar_variant_22.generate_string("S")
-    print(generated_string)
-```
-
-In this part, we define the context-free grammar with non-terminal symbols (`VN`), terminal symbols (`VT`), and production rules (`P`). We also define a class `Grammar` to work with the grammar, including a method `generate_string` to generate strings based on the grammar rules.
-
-### Part 2: Grammar to Finite Automaton Conversion
-
-```python
+Part 2: Grammar to Finite Automaton Conversion
+python
+Copy code
+# Function to convert grammar to finite automaton
 def grammar_to_finite_automaton(grammar):
     states = grammar.vn
     alphabet = grammar.vt
-    start_state = "S"  #'S' is the start symbol
+    start_state = "S"
     accept_states = {
         state for state, rules in grammar.p.items() if any(r in rules for r in grammar.vt)
     }
@@ -91,16 +54,15 @@ def grammar_to_finite_automaton(grammar):
     transitions = {}
     for state, rules in grammar.p.items():
         for rule in rules:
-            if len(rule) == 2:  # Production X -> aY   
-                transitions[(state, rule[0])] = rule[1] 
-            elif len(rule) == 1: 
-                if rule[0] in grammar.vt:  # Simple terminal case
-                    transitions[(state, rule[0])] = rule[0]                   
-                else:                    # Special Case for new transitions like 'A'->'bS' 
-                    transitions[(state, rule[0])] = next(iter(grammar.p[rule[0]]))[0] 
-                
-    return FiniteAutomaton(states, alphabet, transitions, start_state, accept_states)
+            if len(rule) == 2:
+                transitions[(state, rule[0])] = rule[1]
+            elif len(rule) == 1:
+                if rule[0] in grammar.vt:
+                    transitions[(state, rule[0])] = rule[0]
+                else:
+                    transitions[(state, rule[0])] = next(iter(grammar.p[rule[0]]))[0]
 
+    return FiniteAutomaton(states, alphabet, transitions, start_state, accept_states)
 
 # Define the Finite Automaton class
 class FiniteAutomaton:
@@ -115,33 +77,25 @@ class FiniteAutomaton:
         current_state = self.start_state
         for char in string:
             if (current_state, char) not in self.transitions:
-                return False  # No transition possible
+                return False
             current_state = self.transitions[(current_state, char)]
         return current_state in self.accept_states
-```
-
-In this part, we define a function `grammar_to_finite_automaton` that converts the grammar into a finite automaton (FA). The FA has states, alphabet, transitions, start state, and accept states. We also define the `FiniteAutomaton` class to work with FAs, including a method `accepts` to check if a given string is accepted by the FA. The function works by creating a state for each non-terminal symbol in the grammar, and an additional state for the start symbol. The function then adds transitions between the states according to the production rules in the grammar.
-
- The code then creates a FiniteAutomaton object from the grammar and uses it to test whether or not a few strings are accepted by the grammar.
 
 ### Part 3: Testing Strings with the Finite Automaton
-
-```python
+python
+Copy code
 # Test strings
 test_strings = ["aabbc", "ac", "abba", "acaaaabba", "aab"]
 print("\nTesting strings:")
 for string in test_strings:
-    fa = grammar_to_finite_automaton(grammar_variant_22)
+    fa = grammar_to_finite_automaton(grammar_variant_16)
     if fa.accepts(string):
         print(f"String '{string}' is accepted by the FA")
     else:
         print(f"String '{string}' is not accepted by the FA")
-```
-
-The code then creates a FiniteAutomaton object from the grammar and uses it to test whether or not a few strings are accepted by the grammar. In this part, we test several strings using the FA generated from the grammar. For each test string, we convert the grammar to an FA and check if the FA accepts the string, printing the result. 
 
 
-## Conclusions and Results
+**Conclusions and results**
 
 This project was a great introduction to the world of formal languages! Here's what we achieved:
 
