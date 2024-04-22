@@ -1,45 +1,14 @@
 import random
 
-
 class FiniteAutomaton:
-    def __init__(self):
-
-        self.Q = set()
-        self.Sigma = set()
-        self.delta = set()
-        self.q0 = None
-        self.F = set()
-
-    def string_belongs_to_language(self, input_string):
-
-        current_state = self.q0
-        for symbol in input_string:
-            next_states = {next_state for (state, input_symbol, next_state) in self.delta
-                           if state == current_state and input_symbol == symbol}
-            if not next_states:
-                return False
-            current_state = next_states.pop()
-        return current_state in self.F
-
-    def to_regular_grammar(self):
-        # Convert the finite automaton to a regular grammar
-        regular_grammar = Grammar()
-        regular_grammar.VN = self.Q
-        regular_grammar.VT = self.Sigma
-        regular_grammar.P = {}
-
-        for state in self.Q:
-            regular_grammar.P[state] = []
-
-        for transition in self.delta:
-            if transition[2] != 'X':
-                next_state_str = ''.join(transition[2])  # Convert tuple to string
-                regular_grammar.P[transition[0]].append(transition[1] + next_state_str)
-
-        return regular_grammar
+    def __init__(self, Q, Sigma, delta, q0, F):
+        self.Q = Q
+        self.Sigma = Sigma
+        self.delta = delta
+        self.q0 = q0
+        self.F = F
 
     def is_deterministic(self):
-        # Check if the automaton is deterministic
         for state in self.Q:
             for symbol in self.Sigma:
                 next_states = {next_state for (_, input_symbol, next_state) in self.delta
@@ -48,17 +17,17 @@ class FiniteAutomaton:
                     return False
         return True
 
+    def to_regular_grammar(self):
+        regular_grammar = {}
+        for state in self.Q:
+            regular_grammar[state] = [input_symbol + next_state for (_, input_symbol, next_state) in self.delta
+                                      if _ == state and next_state != 'X']
+        return regular_grammar
+
     def to_deterministic_finite_automaton(self):
-        # Convert the non-deterministic finite automaton (NFA) to a deterministic finite automaton (DFA)
-        dfa = FiniteAutomaton()
-        dfa.Sigma = self.Sigma
-        dfa.q0 = frozenset([self.q0])  # Initial state is the epsilon closure of the original initial state
-        dfa.F = set()
-        dfa.Q = set()  # Initialize set of states
-        dfa.delta = set()
+        dfa = FiniteAutomaton(self.Q, self.Sigma, set(), frozenset([self.q0]), set())
 
         def epsilon_closure(state):
-            # Compute epsilon closure of a state in the NFA
             closure = set(state)
             stack = list(state)
             while stack:
@@ -70,7 +39,8 @@ class FiniteAutomaton:
             return frozenset(closure)
 
         unprocessed_states = [dfa.q0]
-        dfa.Q.add(dfa.q0)
+        dfa.delta = set()
+        dfa.F = set()
 
         while unprocessed_states:
             current_state = unprocessed_states.pop(0)
@@ -91,129 +61,42 @@ class FiniteAutomaton:
         return dfa
 
 
-class Grammar:
-    def __init__(self):
-        # Initialize the grammar with empty sets and dictionary
-        self.VN = set()  # Set of non-terminals
-        self.VT = set()  # Set of terminals
-        self.P = {}  # Dictionary of productions
+# Define the finite automaton variant
+Q = {'q0', 'q1', 'q2', 'q3'}
+Sigma = {'a', 'b'}
+delta = {('q0', 'a', 'q1'), ('q1', 'b', 'q1'), ('q1', 'b', 'q2'),
+         ('q2', 'a', 'q2'), ('q2', 'b', 'q3'), ('q0', 'b', 'q0')}
+q0 = 'q0'
+F = {'q3'}
 
-    def generate_string(self):
-        # Generate strings from the grammar
-        generated_strings = []
-        for _ in range(5):
-            generated_string = self._generate_string_helper('S', '')
-            generated_strings.append(generated_string)
-        return generated_strings
+# Create the finite automaton instance
+finite_automaton = FiniteAutomaton(Q, Sigma, delta, q0, F)
 
-    def _generate_string_helper(self, symbol, current_string):
-        # Helper function to recursively generate strings
-        if symbol in self.VT:
-            return current_string + symbol
-        else:
-            productions = self.P[symbol]
-            chosen_production = random.choice(productions)
-            for s in chosen_production:
-                current_string = self._generate_string_helper(s, current_string)
-            return current_string
-
-    def to_finite_automaton(self):
-        # Convert the grammar to a finite automaton
-        finite_automaton = FiniteAutomaton()
-
-        finite_automaton.Q = self.VN.union(self.VT)
-        finite_automaton.Sigma = self.VT
-        finite_automaton.delta = set()
-
-        for non_terminal, productions in self.P.items():
-            for production in productions:
-                if len(production) > 1:
-                    current_state = production[0]
-                    next_state = production[1]
-                    finite_automaton.delta.add((non_terminal, current_state, next_state))
-                else:
-                    if non_terminal in finite_automaton.F:
-                        finite_automaton.delta.add((non_terminal, production, 'X'))
-                    else:
-                        if production == 'b':
-                            finite_automaton.delta.add((non_terminal, production, 'X'))
-                        elif production == 'd':
-                            finite_automaton.delta.add((non_terminal, production, 'X'))
-                        else:
-                            finite_automaton.delta.add((non_terminal, production, production))
-
-        finite_automaton.q0 = 'S'
-        finite_automaton.F = {'X'}
-
-        return finite_automaton
-
-    def check_grammar_type(self):
-        start_symbol = None
-        has_epsilon = False
-        for non_terminal, productions in self.P.items():
-            if not start_symbol:
-                start_symbol = non_terminal
-            for production in productions:
-                if 'ε' in production:
-                    has_epsilon = True
-                if len(production) > 2:
-                    return "Type-0 (Unrestricted)"
-                if len(production) == 2:
-                    if production[0] in self.VN and production[1] in self.VT:
-                        return "Type-1 (Context-Sensitive)"
-                if len(production) == 1:
-                    if production[0] in self.VT:
-                        return "Type-3 (Regular)"
-        if start_symbol and not has_epsilon:
-            return "Type-2 (Context-Free)"
-        return "Type-0 (Unrestricted)"  # Most general case
-
-
-# Define the grammar variant
-grammar = Grammar()
-grammar.VN = {"S", "A", "B"}
-grammar.VT = {"a", "b", "c"}
-grammar.P = {
-    "S": ["aA", "bB"],
-    "A": ["bS", "cA", "aB"],
-    "B": ["aB", "b"],
-}
-
-# Check the type of each grammar
-print("Grammar Classification:", grammar.check_grammar_type())
-
-# Define the finite automaton variant ( states )
-finite_automaton = FiniteAutomaton()
-finite_automaton.Q = {'q0', 'q1', 'q2'}
-finite_automaton.Sigma = {'a', 'b'}
-finite_automaton.delta = {('q0', 'a', 'q1'), ('q1', 'b', 'q1'), ('q1', 'b', 'q2'),
-                          ('q0', 'b', 'q1'), ('q1', 'b', 'q0'), ('q2', 'a', 'q1')}
-finite_automaton.q0 = 'q1'
-finite_automaton.F = {'q2'}
+# Check if the finite automaton is deterministic
+if finite_automaton.is_deterministic():
+    print("The finite automaton is deterministic.")
+else:
+    print("The finite automaton is non-deterministic.")
 
 # Convert finite automaton to regular grammar
 regular_grammar = finite_automaton.to_regular_grammar()
 
 # Print the regular grammar productions
 print("Conversion to grammar:")
-for non_terminal, productions in regular_grammar.P.items():
+for state, productions in regular_grammar.items():
     for production in productions:
-        print(non_terminal, "->", production)
-
-# Determine if the finite automaton is deterministic
-is_deterministic = finite_automaton.is_deterministic()
-
-if is_deterministic:
-    print("The NDFA is deterministic.")
-else:
-    print("The NDFA is non-deterministic.")
+        print(state, "->", production)
 
 # Convert finite automaton to deterministic finite automaton
 dfa = finite_automaton.to_deterministic_finite_automaton()
 
 # Check if the resulting DFA is deterministic
-is_deterministic_dfa = dfa.is_deterministic()
-if is_deterministic_dfa:
+if dfa.is_deterministic():
     print("The converted DFA is deterministic.")
 else:
     print("The converted DFA is non-deterministic.")
+
+# Print the states and transitions of the DFA
+print("States and transitions of the DFA:")
+for state, symbol, next_state in dfa.delta:
+    print(state, "--", symbol, "-->", next_state)
