@@ -45,25 +45,13 @@ def generate_combinations(regex):
     return result
 
 def main():
-    # Define regular expressions
-    re1 = "M?N^2(O|P)^3Q*R+"
-    re2 = "(X|Y|Z)^38+(9|0)^2"
-    re3 = "(H|i)(J|K)L*N?"
+    # Define regular expression
+    regex = "(S|T)(u|v)w*y+"
 
-    # Generate combinations and print for each regular expression
-    print("====1====")
+    # Generate combinations and print
+    print("====Variant 4====")
     for _ in range(5):
-        print(generate_combinations(re1))
-        print()
-
-    print("====2====")
-    for _ in range(5):
-        print(generate_combinations(re2))
-        print()
-
-    print("====3====")
-    for _ in range(5):
-        print(generate_combinations(re3))
+        print(generate_combinations(regex))
         print()
 
 if __name__ == "__main__":
