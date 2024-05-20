@@ -1,7 +1,6 @@
 # Topic: Chomsky Normal Form
 
 ### Course: Formal Languages & Finite Automata
-### Author: Cretu Dumitru and cudos to the Vasile Drumea with Irina Cojuhari
 ### Author: Lupan Ovidiu
 
 ----
