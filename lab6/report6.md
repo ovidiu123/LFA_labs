@@ -203,11 +203,6 @@ The code presented is a simplified implementation of a lexer, parser, and abstra
     
     ---
 
-    **Visual**
-    
-    ![outputyo](/6%20lab/output.png)
-
-    ---
 
 ## Conclusion:
 
